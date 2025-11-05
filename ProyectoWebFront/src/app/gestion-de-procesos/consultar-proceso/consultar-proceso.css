@@ -338,3 +338,54 @@ button.ver-btn:hover {
     transform: translateY(0);
   }
 }
+.btn {
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+/* Verde (Crear, Editar) */
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+.btn-success:hover {
+  background-color: #218838;
+}
+
+/* Azul (Ver, Cerrar) */
+.btn-info {
+  background-color: #007bff;
+  color: white;
+}
+.btn-info:hover {
+  background-color: #0069d9;
+}
+
+/* Rojo (Eliminar) */
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+.btn-danger:hover {
+  background-color: #b02a37;
+}
+
+/* Alineaciones */
+.acciones-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 14px;
+}
+

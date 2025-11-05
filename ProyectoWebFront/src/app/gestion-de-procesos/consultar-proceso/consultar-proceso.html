@@ -1,78 +1,67 @@
+<!-- src/app/gestion-de-procesos/consultar-proceso/consultar-proceso.html -->
 <div class="consultar-container">
   <div class="consultar-card">
     <div class="consultar-header">
       <h2>Consultar Procesos</h2>
 
-      <div class="search-bar">
-        <input
-          type="text"
-          placeholder="Buscar por nombre o categoría..."
-          [formControl]="searchForm.get('terminoBusqueda')"
-          aria-label="Campo de búsqueda para filtrar procesos por nombre o categoría"
-          (keydown.enter)="onKeyDown($event)"
-        />
-        <button 
-          type="button"
-          (click)="toggleFiltro()" 
-          (keydown.enter)="toggleFiltro()"
-          [attr.aria-expanded]="mostrarFiltro.toString()"
-          [attr.aria-label]="mostrarFiltro ? 'Ocultar filtros' : 'Mostrar filtros'"
-        >
-          {{ mostrarFiltro ? 'Ocultar' : 'Filtros' }}
-        </button>
-      </div>
-    </div>
+      <!-- FORM con formGroup -->
+      <form [formGroup]="searchForm" class="search-form" (submit)="$event.preventDefault()">
+        <div class="search-bar">
+          <input
+            type="text"
+            placeholder="Buscar por nombre o categoría..."
+            formControlName="terminoBusqueda"
+            aria-label="Campo de búsqueda para filtrar procesos por nombre o categoría"
+            (keydown.enter)="onKeyDown($event)"
+          />
+          <button
+            type="button"
+            (click)="toggleFiltro()"
+            (keydown.enter)="toggleFiltro()"
+            [attr.aria-expanded]="mostrarFiltro.toString()"
+            [attr.aria-label]="mostrarFiltro ? 'Ocultar filtros' : 'Mostrar filtros'">
+            {{ mostrarFiltro ? 'Ocultar' : 'Filtros' }}
+          </button>
+        </div>
 
-    <!-- Panel de filtros -->
-    <div *ngIf="mostrarFiltro" class="filter-panel" role="region" aria-label="Panel de filtros">
-      <h3>Filtrar procesos</h3>
-      
-      <div class="filter-group">
-        <label for="filtroFecha">Fecha de creación:</label>
-        <input 
-          id="filtroFecha"
-          type="date" 
-          [formControl]="searchForm.get('filtroFecha')"
-          aria-describedby="filtroFecha-help"
-        />
-        <small id="filtroFecha-help" class="sr-only">Selecciona una fecha específica</small>
-      </div>
+        <!-- Panel de filtros -->
+        <div *ngIf="mostrarFiltro" class="filter-panel" role="region" aria-label="Panel de filtros">
+          <h3>Filtrar procesos</h3>
 
-      <div class="filter-group">
-        <label for="filtroDuracion">Duración (días):</label>
-        <input 
-          id="filtroDuracion"
-          type="number" 
-          [formControl]="searchForm.get('filtroDuracion')"
-          min="1"
-          placeholder="Ej: 10"
-          aria-describedby="filtroDuracion-help"
-        />
-        <small id="filtroDuracion-help" class="sr-only">Ingresa un número de días</small>
-      </div>
+          <div class="filter-group">
+            <label for="filtroFecha">Fecha de creación:</label>
+            <input id="filtroFecha" type="date" formControlName="filtroFecha" />
+          </div>
 
-      <div class="filter-group">
-        <label for="filtroEstado">Estado:</label>
-        <select 
-          id="filtroEstado"
-          [formControl]="searchForm.get('filtroEstado')"
-          aria-describedby="filtroEstado-help"
-        >
-          <option value="">Todos los estados</option>
-          <option value="activo">Activo</option>
-          <option value="inactivo">Inactivo</option>
-        </select>
-        <small id="filtroEstado-help" class="sr-only">Selecciona el estado del proceso</small>
-      </div>
+          <div class="filter-group">
+            <label for="filtroDuracion">Duración (días):</label>
+            <input id="filtroDuracion" type="number" formControlName="filtroDuracion" min="1" placeholder="Ej: 10" />
+          </div>
+
+          <div class="filter-group">
+            <label for="filtroEstado">Estado:</label>
+            <select id="filtroEstado" formControlName="filtroEstado">
+              <option value="">Todos los estados</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+        </div>
+      </form>
     </div>
 
     <!-- Indicadores de estado -->
     <div class="loading-indicator" *ngIf="loading" role="status" aria-live="polite">
       <span>Cargando procesos...</span>
     </div>
-    
+
     <div class="error-message" *ngIf="errorMessage" role="alert">
       <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- BOTÓN CREAR -->
+    <div class="crear-wrapper">
+      <button type="button" class="btn btn-success" (click)="irCrear()">Crear</button>
     </div>
 
     <!-- Lista de procesos -->
@@ -81,8 +70,8 @@
         *ngFor="let proceso of filtrarProcesos(); trackBy: trackByProcesoId"
         class="proceso-item"
         role="article"
-        [attr.aria-label]="'Proceso ' + proceso.nombre"
-      >
+        [attr.aria-label]="'Proceso ' + proceso.nombre">
+
         <div class="proceso-info">
           <span class="proceso-id">#{{ proceso.id }}</span>
           <div class="proceso-detalles">
@@ -91,50 +80,63 @@
             <span><strong>Estado:</strong> {{ proceso.estado }}</span>
           </div>
         </div>
-        <button 
-          class="ver-btn" 
-          (click)="abrirModal(proceso)"
-          (keydown.enter)="onKeyDown($event, proceso)"
-          [attr.aria-label]="'Ver detalles del proceso ' + proceso.nombre"
-        >
-          Ver Detalles
-        </button>
+
+        <!-- Acciones del item -->
+        <div class="acciones-item">
+          <button
+            class="btn btn-danger"
+            type="button"
+            (click)="eliminarDesdeLista(proceso)"
+            [attr.aria-label]="'Eliminar proceso ' + proceso.nombre">
+            Eliminar
+          </button>
+
+          <button
+            class="btn btn-info"
+            type="button"
+            (click)="abrirModal(proceso)"
+            (keydown.enter)="onKeyDown($event, proceso)"
+            [attr.aria-label]="'Ver detalles del proceso ' + proceso.nombre">
+            Ver Detalles
+          </button>
+        </div>
       </div>
-      
+
       <!-- Mensaje cuando no hay procesos -->
-      <div 
-        *ngIf="!loading && filtrarProcesos().length === 0" 
+      <div
+        *ngIf="!loading && filtrarProcesos().length === 0"
         class="no-results"
         role="status"
-        aria-live="polite"
-      >
-        <p>{{ 
-          mostrarFiltro && (searchForm.value.terminoBusqueda || searchForm.value.filtroEstado || searchForm.value.filtroFecha || searchForm.value.filtroDuracion > 0)
-            ? 'No se encontraron procesos que coincidan con los filtros aplicados'
-            : 'No hay procesos disponibles'
-        }}</p>
+        aria-live="polite">
+        <p>
+          {{
+          mostrarFiltro &&
+          (searchForm.value.terminoBusqueda ||
+          searchForm.value.filtroEstado ||
+          searchForm.value.filtroFecha ||
+          searchForm.value.filtroDuracion > 0)
+          ? 'No se encontraron procesos que coincidan con los filtros aplicados'
+          : 'No hay procesos disponibles'
+          }}
+        </p>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal overlay -->
-<div 
-  class="modal-overlay" 
-  *ngIf="modalOpen" 
+<div
+  class="modal-overlay"
+  *ngIf="modalOpen"
   (click)="cerrarModal()"
   (keydown.escape)="onKeyDown($event)"
-  tabindex="-1"
->
+  tabindex="-1">
+
   <div class="modal" (click)="$event.stopPropagation()">
+
     <div class="modal-header">
       <h3>Detalles del proceso "{{ procesoSeleccionado?.nombre }}"</h3>
-      <button 
-        class="close-btn" 
-        aria-label="Cerrar" 
-        (click)="cerrarModal()"
-        (keydown.enter)="onKeyDown($event)"
-      >✕</button>
+      <button class="close-btn" aria-label="Cerrar" (click)="cerrarModal()">✕</button>
     </div>
 
     <div class="modal-body">
@@ -148,24 +150,21 @@
 
       <div class="detalles">
         <h4>Actividades</h4>
-        <ul>
-          <li *ngFor="let a of procesoSeleccionado?.actividadesProceso">{{ a }}</li>
-        </ul>
+        <ul><li *ngFor="let a of procesoSeleccionado?.actividadesProceso">{{ a }}</li></ul>
 
         <h4>Arcos</h4>
-        <ul>
-          <li *ngFor="let arc of procesoSeleccionado?.arcosProceso">{{ arc }}</li>
-        </ul>
+        <ul><li *ngFor="let arc of procesoSeleccionado?.arcosProceso">{{ arc }}</li></ul>
 
         <h4>Gateways</h4>
-        <ul>
-          <li *ngFor="let g of procesoSeleccionado?.gatewaysProceso">{{ g }}</li>
-        </ul>
+        <ul><li *ngFor="let g of procesoSeleccionado?.gatewaysProceso">{{ g }}</li></ul>
       </div>
     </div>
 
     <div class="modal-footer">
-      <button (click)="cerrarModal()">Cerrar</button>
+      <button type="button" class="btn btn-success" (click)="editarSeleccionado()">Editar</button>
+      <button type="button" class="btn btn-danger" (click)="eliminarSeleccionado()">Eliminar</button>
+      <button type="button" class="btn btn-info" (click)="cerrarModal()">Cerrar</button>
     </div>
+
   </div>
 </div>

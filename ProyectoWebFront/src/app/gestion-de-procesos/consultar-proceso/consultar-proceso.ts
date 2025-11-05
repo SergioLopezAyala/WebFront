@@ -1,10 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ProcesoService, ProcesoDto } from '../../services/proceso.service';
 import { Router } from '@angular/router';
 import { PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 
 interface ProcesoView {
   id: number;
@@ -27,11 +26,11 @@ interface ProcesoView {
   styleUrls: ['./consultar-proceso.css'],
 })
 export class ConsultarProceso {
-  // Formulario reactivo
+  // Formulario
   searchForm: FormGroup;
   mostrarFiltro = false;
 
-  // Estados para la carga de datos
+  // Estado de carga
   loading = false;
   errorMessage = '';
 
@@ -39,7 +38,7 @@ export class ConsultarProceso {
   modalOpen = false;
   procesoSeleccionado: ProcesoView | null = null;
 
-  // Lista de procesos desde el backend
+  // Datos
   procesos: ProcesoView[] = [];
   todosLosProcesos: ProcesoView[] = [];
 
@@ -53,7 +52,6 @@ export class ConsultarProceso {
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
 
-    // Crear formulario reactivo
     this.searchForm = this.fb.group({
       terminoBusqueda: [''],
       filtroFecha: [''],
@@ -151,7 +149,6 @@ export class ConsultarProceso {
     };
 
     const term = (formValue.terminoBusqueda || '').trim().toLowerCase();
-
     if (!this.todosLosProcesos || this.todosLosProcesos.length === 0) return [];
 
     return this.todosLosProcesos.filter((p) => {
@@ -180,37 +177,51 @@ export class ConsultarProceso {
     this.procesoSeleccionado = p;
     this.modalOpen = true;
 
-    // Guard SSR
     if (this.isBrowser) {
       document.body.style.overflow = 'hidden';
       setTimeout(() => {
         const modal = document.querySelector('.modal');
         if (modal) (modal as HTMLElement).focus();
-      }, 100);
+      }, 0);
     }
   }
 
   cerrarModal(): void {
     this.modalOpen = false;
     this.procesoSeleccionado = null;
-
-    if (this.isBrowser) {
-      document.body.style.overflow = '';
-    }
+    if (this.isBrowser) document.body.style.overflow = '';
   }
 
-  // Manejo de eventos de teclado para accesibilidad
   onKeyDown(event: Event, proceso?: ProcesoView): void {
     const keyboardEvent = event as KeyboardEvent;
-
-    if (keyboardEvent.key === 'Enter' && proceso) {
-      this.abrirModal(proceso);
-    }
+    if (keyboardEvent.key === 'Enter' && proceso) this.abrirModal(proceso);
     if (keyboardEvent.key === 'Escape') {
       if (this.modalOpen) this.cerrarModal();
       else this.toggleFiltro();
     }
   }
+
+  // ---------- Navegación/acciones invocadas desde el HTML ----------
+  irCrear(): void {
+    // alias de crearNuevoProceso para coincidir con el HTML
+    this.crearNuevoProceso();
+  }
+
+  eliminarDesdeLista(p: ProcesoView): void {
+    // wrapper del botón "Eliminar" en cada item
+    this.eliminarProceso(p);
+  }
+
+  editarSeleccionado(): void {
+    if (!this.procesoSeleccionado) return;
+    this.editarProceso(this.procesoSeleccionado);
+  }
+
+  eliminarSeleccionado(): void {
+    if (!this.procesoSeleccionado) return;
+    this.eliminarProceso(this.procesoSeleccionado);
+  }
+  // ------------------------------------------------------------------
 
   verDetalles(p: ProcesoView): void {
     this.abrirModal(p);
@@ -221,11 +232,14 @@ export class ConsultarProceso {
   }
 
   eliminarProceso(p: ProcesoView): void {
-    if (confirm('¿Está seguro de que desea eliminar este proceso?')) {
+    if (!p) return;
+    if (confirm(`¿Eliminar el proceso "${p.nombre}"?`)) {
       this.procesoService.eliminar(p.id).subscribe({
         next: () => {
-          console.log('Proceso eliminado exitosamente');
-          this.cargarProcesos();
+          // Refresca lista local rápidamente
+          this.todosLosProcesos = this.todosLosProcesos.filter(x => x.id !== p.id);
+          this.procesos = this.procesos.filter(x => x.id !== p.id);
+          this.cerrarModal();
           alert('Proceso eliminado exitosamente');
         },
         error: (error: unknown) => {
@@ -240,7 +254,6 @@ export class ConsultarProceso {
     this.router.navigate(['/crear-proceso']);
   }
 
-  // Método para *ngFor
   trackByProcesoId(index: number, proceso: ProcesoView): number {
     return proceso.id;
   }
