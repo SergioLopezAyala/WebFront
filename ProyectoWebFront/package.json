@@ -14,14 +14,21 @@
     "printWidth": 100,
     "singleQuote": true,
     "overrides": [
-      { "files": "*.html", "options": { "parser": "angular" } }
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
     ]
   },
   "dependencies": {
+    "@angular/animations": "^20.3.10",
     "@angular/common": "^20.3.8",
     "@angular/compiler": "^20.3.8",
     "@angular/core": "^20.3.8",
     "@angular/forms": "^20.3.8",
+    "@angular/material": "^20.2.11",
     "@angular/platform-browser": "^20.3.8",
     "@angular/platform-server": "^20.3.8",
     "@angular/router": "^20.3.8",

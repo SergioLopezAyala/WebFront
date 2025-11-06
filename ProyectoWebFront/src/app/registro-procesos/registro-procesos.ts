@@ -1,119 +1,147 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProcesoService, ProcesoDto } from '../services/proceso.service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+
+import { ProcesoService } from '../services';
+import { ProcesoDto } from '../dto/procesoDto';
+
+// Si tienes un enum real del backend, úsalo aquí:
+type ProcessStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'COMPLETED';
 
 @Component({
   selector: 'app-registro-procesos',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [FormsModule, CommonModule],
   templateUrl: './registro-procesos.html',
-  styleUrl: './registro-procesos.css'
+  styleUrls: ['./registro-procesos.css'],
 })
-export class RegistroProcesos {
-  procesos: ProcesoDto[] = [];
-  nuevoProceso: ProcesoDto = {
-    nombre: '',
-    descripcion: '',
-    categoria: '',
-    estado: 'borrador'
+export class RegistroProcesos implements OnInit {
+  // Estados para el <select>
+  statuses: ProcessStatus[] = ['DRAFT', 'ACTIVE', 'PAUSED', 'COMPLETED'];
+  procesoDto: ProcesoDto = new ProcesoDto();
+  // Modelo del formulario (inicialización segura)
+  // procesoDto: ProcesoDto = new ProcesoDto({
+  //   id: null as any,                // si tu clase espera number | undefined, puedes dejar undefined
+  //   name: '',
+  //   description: '',
+  //   category: null as any,
+  //   status: 'DRAFT' as any,
+  //   organizationId: null as any,
+  //   activityIds: [],
+  //   archIds: [],
+  //   gatewayIds: [],
+  // });
+
+  // Catálogos (ejemplo; normalmente se cargan desde API en ngOnInit)
+  activitiesCatalogo = [
+    { id: 1, name: 'Crear solicitud' },
+    { id: 2, name: 'Validar datos' },
+  ];
+
+  archsCatalogo = [
+    { id: 10, actividadI: 1, actividadD: 2 },
+    { id: 11, actividadI: 2, actividadD: 3 },
+  ];
+
+  gatewaysCatalogo = [
+    { id: 100, type: 'EXCLUSIVE' },
+    { id: 101, type: 'PARALLEL' },
+  ];
+
+  // Inputs “rápidos” (agregar por ID)
+  quick = {
+    activityId: null as number | null,
+    archId: null as number | null,
+    gatewayId: null as number | null,
   };
-  
-  loading: boolean = false;
-  errorMessage: string = '';
-  successMessage: string = '';
-  mostrarFormulario: boolean = false;
 
   constructor(
-    private procesoService: ProcesoService,
-    private router: Router
-  ) {
-    this.cargarProcesos();
+    private router: Router,
+    private procesoService: ProcesoService
+  ) {}
+
+  ngOnInit(): void {
+    // Ejemplo de carga desde API:
+    // this.miService.getActivities().subscribe(r => this.activitiesCatalogo = r);
+    // this.miService.getArches().subscribe(r => this.archsCatalogo = r);
+    // this.miService.getGateways().subscribe(r => this.gatewaysCatalogo = r);
+    // Normaliza arrays por si vinieran undefined:
+    this.procesoDto.activityIds ??= [];
+    this.procesoDto.archIds ??= [];
+    this.procesoDto.gatewayIds ??= [];
   }
 
-  cargarProcesos() {
-    this.loading = true;
-    
-    this.procesoService.listar().subscribe({
-      next: (procesos) => {
-        this.procesos = procesos;
-        this.loading = false;
+  // ----- Acciones del formulario -----
+  onRegistrarProceso() {
+    this.crearProceso();
+  }
+
+  crearProceso() {
+    // Asegura que las listas sean number[] (por si acaso):
+    this.procesoDto.activityIds = (this.procesoDto.activityIds ?? []).map(Number);
+    this.procesoDto.archIds = (this.procesoDto.archIds ?? []).map(Number);
+    this.procesoDto.gatewayIds = (this.procesoDto.gatewayIds ?? []).map(Number);
+
+    this.procesoService.crear(this.procesoDto).subscribe({
+      next: (data) => {
+        console.log('Proceso creado:', data);
+        // redirige a la lista o detalle
+        // this.router.navigate(['/procesos']);
       },
-      error: (error) => {
-        console.error('Error al cargar procesos:', error);
-        this.errorMessage = 'Error al cargar los procesos';
-        this.loading = false;
-      }
+      error: (err) => {
+        console.error('Error creando proceso', err);
+        // aquí puedes setear un mensaje de error para el template
+      },
     });
   }
 
-  toggleFormulario() {
-    this.mostrarFormulario = !this.mostrarFormulario;
-    if (!this.mostrarFormulario) {
-      this.limpiarFormulario();
+  // ----- Helpers para agregar/quitar IDs -----
+  private ensureArrays() {
+    this.procesoDto.activityIds ??= [];
+    this.procesoDto.archIds ??= [];
+    this.procesoDto.gatewayIds ??= [];
+  }
+
+  agregarId(kind: 'activity' | 'arch' | 'gateway') {
+    this.ensureArrays();
+
+    const map = {
+      activity: 'activityId',
+      arch: 'archId',
+      gateway: 'gatewayId',
+    } as const;
+
+    const key = map[kind];
+    const value = this.quick[key];
+
+    if (value == null) return;
+
+    const target =
+      kind === 'activity'
+        ? this.procesoDto.activityIds!
+        : kind === 'arch'
+        ? this.procesoDto.archIds!
+        : this.procesoDto.gatewayIds!;
+
+    if (!target.includes(value)) {
+      target.push(value);
     }
+    this.quick[key] = null;
   }
 
-  guardarProceso() {
-    if (!this.nuevoProceso.nombre || !this.nuevoProceso.descripcion || !this.nuevoProceso.categoria) {
-      this.errorMessage = 'Por favor complete todos los campos obligatorios';
-      return;
+  quitarId(kind: 'activity' | 'arch' | 'gateway', index: number) {
+    this.ensureArrays();
+
+    const target =
+      kind === 'activity'
+        ? this.procesoDto.activityIds!
+        : kind === 'arch'
+        ? this.procesoDto.archIds!
+        : this.procesoDto.gatewayIds!;
+
+    if (index >= 0 && index < target.length) {
+      target.splice(index, 1);
     }
-
-    this.errorMessage = '';
-    this.successMessage = '';
-    this.loading = true;
-
-    this.procesoService.crear(this.nuevoProceso).subscribe({
-      next: (proceso) => {
-        console.log('Proceso creado exitosamente:', proceso);
-        this.successMessage = 'Proceso creado exitosamente';
-        this.loading = false;
-        this.cargarProcesos();
-        this.toggleFormulario();
-      },
-      error: (error) => {
-        console.error('Error al crear proceso:', error);
-        this.errorMessage = 'Error al crear el proceso. Intente nuevamente.';
-        this.loading = false;
-      }
-    });
-  }
-
-  limpiarFormulario() {
-    this.nuevoProceso = {
-      nombre: '',
-      descripcion: '',
-      categoria: '',
-      estado: 'borrador'
-    };
-    this.errorMessage = '';
-    this.successMessage = '';
-  }
-
-  editarProceso(proceso: ProcesoDto) {
-    if (proceso.id) {
-      this.router.navigate(['/editar-proceso'], { queryParams: { id: proceso.id } });
-    }
-  }
-
-  eliminarProceso(proceso: ProcesoDto) {
-    if (!proceso.id) return;
-    
-    if (confirm('¿Está seguro de que desea eliminar este proceso?')) {
-      this.procesoService.eliminar(proceso.id).subscribe({
-        next: () => {
-          this.cargarProcesos();
-          alert('Proceso eliminado exitosamente');
-        },
-        error: (error) => {
-          console.error('Error al eliminar proceso:', error);
-          alert('Error al eliminar el proceso');
-        }
-      });
-    }
-  }
-
-  volver() {
-    this.router.navigate(['/crear-proceso']);
   }
 }

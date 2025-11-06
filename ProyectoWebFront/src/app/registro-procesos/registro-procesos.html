@@ -1,1 +1,198 @@
-<p>registro-procesos works!</p>
+<!-- proceso-form.html -->
+<div class="registro-container">
+  <div class="registro-card">
+    <h2>Registro de proceso</h2>
+
+    <form (ngSubmit)="onRegistrarProceso()" #procesoForm="ngForm">
+          <div class="input-group">
+        <label for="name">Nombre del proceso</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          [(ngModel)]="procesoDto.name"
+          required
+          placeholder="Ej: Onboarding de clientes"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="description">Descripción</label>
+        <input
+          type="text"
+          id="description"
+          name="description"
+          [(ngModel)]="procesoDto.description"
+          required
+          placeholder="Breve descripción del proceso"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="category">Categoría</label>
+        <input
+          type="text"
+          id="category"
+          name="category"
+          [(ngModel)]="procesoDto.category"
+          placeholder="Ej: Comercial / Operaciones"
+        />
+      </div>
+
+      <!-- Status como select (llenado desde TS: statuses = ['DRAFT','ACTIVE','PAUSED','COMPLETED']) -->
+      <div class="input-group">
+        <label for="status">Estado</label>
+        <select
+          id="status"
+          name="status"
+          [(ngModel)]="procesoDto.status"
+          required
+        >
+          <option [ngValue]="null" disabled>Selecciona un estado</option>
+          <option *ngFor="let s of statuses" [ngValue]="s">{{ s }}</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="organizationId">ID de organización</label>
+        <input
+          type="number"
+          id="organizationId"
+          name="organizationId"
+          [(ngModel)]="procesoDto.organizationId"
+          required
+          min="1"
+          placeholder="Ej: 900123456"
+        />
+      </div>
+
+      <!-- ===== LISTAS COMO MULTISELECTS (RECOMENDADO) ===== -->
+
+      <!-- Activities -->
+      <div class="input-group">
+        <label for="activityIds">Actividades (IDs)</label>
+        <select
+          multiple
+          id="activityIds"
+          name="activityIds"
+          [(ngModel)]="procesoDto.activityIds"
+          size="5"
+        >
+          <!-- activitiesCatálogo: {id:number, name:string}[] -->
+          <option
+            *ngFor="let a of activitiesCatalogo"
+            [ngValue]="a.id"
+          >
+            {{ a.id }} — {{ a.name }}
+          </option>
+        </select>
+        <small>Usa Ctrl/Cmd o Shift para seleccionar varias.</small>
+      </div>
+
+      <!-- Arches -->
+      <div class="input-group">
+        <label for="archIds">Arcos (IDs)</label>
+        <select
+          multiple
+          id="archIds"
+          name="archIds"
+          [(ngModel)]="procesoDto.archIds"
+          size="5"
+        >
+          <!-- archesCatálogo: {id:number, actividadI:number, actividadD:number}[] -->
+          <option
+            *ngFor="let ar of archsCatalogo"
+            [ngValue]="ar.id"
+          >
+            {{ ar.id }} — ({{ ar.actividadI }} ➜ {{ ar.actividadD }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Gateways -->
+      <div class="input-group">
+        <label for="gatewayIds">Gateways (IDs)</label>
+        <select
+          multiple
+          id="gatewayIds"
+          name="gatewayIds"
+          [(ngModel)]="procesoDto.gatewayIds"
+          size="5"
+        >
+          <!-- gatewaysCatálogo: {id:number, type:string}[] -->
+          <option
+            *ngFor="let g of gatewaysCatalogo"
+            [ngValue]="g.id"
+          >
+            {{ g.id }} — {{ g.type }}
+          </option>
+        </select>
+      </div>
+
+      <!-- ===== ALTERNATIVA: AGREGAR POR ID (RÁPIDO) ===== -->
+      <div class="input-group">
+        <label>Agregar IDs manualmente</label>
+
+        <!-- Activity quick add -->
+        <div class="row-inline">
+          <input
+            type="number"
+            placeholder="ID actividad"
+            [(ngModel)]="quick.activityId"
+            name="quickActivityId"
+          />
+          <button type="button" (click)="agregarId('activity')">Agregar</button>
+        </div>
+        <div class="chips">
+          <span class="chip" *ngFor="let id of procesoDto.activityIds; let i = index">
+            {{ id }}
+            <button type="button" class="chip-x" (click)="quitarId('activity', i)">✕</button>
+          </span>
+        </div>
+
+        <!-- Arch quick add -->
+        <div class="row-inline">
+          <input
+            type="number"
+            placeholder="ID arco"
+            [(ngModel)]="quick.archId"
+            name="quickArchId"
+          />
+          <button type="button" (click)="agregarId('arch')">Agregar</button>
+        </div>
+        <div class="chips">
+          <span class="chip" *ngFor="let id of procesoDto.archIds; let i = index">
+            {{ id }}
+            <button type="button" class="chip-x" (click)="quitarId('arch', i)">✕</button>
+          </span>
+        </div>
+
+        <!-- Gateway quick add -->
+        <div class="row-inline">
+          <input
+            type="number"
+            placeholder="ID gateway"
+            [(ngModel)]="quick.gatewayId"
+            name="quickGatewayId"
+          />
+          <button type="button" (click)="agregarId('gateway')">Agregar</button>
+        </div>
+        <div class="chips">
+          <span class="chip" *ngFor="let id of procesoDto.gatewayIds; let i = index">
+            {{ id }}
+            <button type="button" class="chip-x" (click)="quitarId('gateway', i)">✕</button>
+          </span>
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="procesoForm.invalid">
+        Guardar proceso
+      </button>
+
+      <p class="login-text">
+        ¿Volver?
+        <a routerLink="/procesos">Lista de procesos</a>
+      </p>
+    </form>
+  </div>
+</div>

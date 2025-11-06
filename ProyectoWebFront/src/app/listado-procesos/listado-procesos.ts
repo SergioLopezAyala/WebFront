@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProcesoService, ProcesoDto } from '../services/proceso.service';
+import { ProcesoService } from '../services/proceso.service';
 import { Router } from '@angular/router';
+import { ProcesoDto } from '../dto/procesoDto';
 
 @Component({
   selector: 'app-listado-procesos',

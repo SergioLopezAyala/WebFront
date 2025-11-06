@@ -1,1 +1,41 @@
-<p>mostrar-actividades works!</p>
+<div class="board" #boardRef>
+  <h2 class="title">Actividades (arrastra libremente)</h2>
+
+  <div *ngIf="loading" class="info">Cargando…</div>
+  <div *ngIf="!loading && errorMsg" class="error">{{ errorMsg }}</div>
+
+  @for (act of activities; track act.id) {
+  <article
+    class="card"
+    [style.transform]="'translate3d(' + (act.x || 0) + 'px,' + (act.y || 0) + 'px,0)'"
+    role="button"
+    tabindex="0"
+    (pointerdown)="onPointerDown($event, act, card)"
+    (pointercancel)="onPointerUp($event)"
+    (lostpointercapture)="onPointerUp($event)"
+    #card
+    draggable="false"
+  >
+    <div class="card__row">
+      <span class="handle" aria-hidden="true">⋮⋮</span>
+      <h3 class="card__title">{{ act.name || 'Sin nombre' }}</h3>
+      <span class="badge">{{ (act.type || '—') | uppercase }}</span>
+    </div>
+
+    <p class="card__desc">{{ act.description || 'Sin descripción' }}</p>
+
+    <div class="meta">
+      <div class="meta__item">
+        <span class="meta__label">X</span><span class="meta__value">{{ act.x ?? 0 }}</span>
+      </div>
+      <div class="meta__item">
+        <span class="meta__label">Y</span><span class="meta__value">{{ act.y ?? 0 }}</span>
+      </div>
+      <div class="meta__item id">
+        <span class="meta__label">ID</span><span class="meta__value">{{ act.id }}</span>
+      </div>
+    </div>
+  </article>
+
+  }
+</div>
