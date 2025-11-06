@@ -43,10 +43,11 @@
       </div>
 
       <div class="input-group">
-        <label for="estado">Estado</label>
+        <label for="estado">Estado del proceso</label>
         <select id="estado" name="estado" [(ngModel)]="estadoProceso" required>
-          <option value="borrador">Borrador</option>
-          <option value="publicado">Publicado</option>
+          <option value="DRAFT">Borrador</option>
+          <option value="PUBLISHED">Publicado</option>
+          <option value="INACTIVE">Inactivo</option>
         </select>
       </div>
 
