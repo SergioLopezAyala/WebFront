@@ -1,39 +1,68 @@
-<div class="wrap">
+<div class="editar-container">
   <div class="card">
     <h2>Modificar Actividad</h2>
+    <p class="subtitle">Actualiza la información de una actividad existente dentro de un proceso.</p>
 
     <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
-      <label>Nombre
-        <input type="text" formControlName="name" placeholder="Nombre de la actividad" />
-      </label>
-      <small class="err" *ngIf="c('name').touched && c('name').invalid">Nombre requerido (mín 2).</small>
-
-      <label>Tipo
-        <select formControlName="type">
-          <option value="" disabled>Seleccione</option>
-          <option *ngFor="let t of tipos" [value]="t">{{ t }}</option>
-        </select>
-      </label>
-      <small class="err" *ngIf="c('type').touched && c('type').invalid">Tipo requerido.</small>
-
-      <label>Descripción
-        <textarea rows="3" formControlName="description" placeholder="Descripción (opcional)"></textarea>
-      </label>
-
-      <div class="grid2">
-        <label>X
-          <input type="number" formControlName="x" />
-        </label>
-        <label>Y
-          <input type="number" formControlName="y" />
-        </label>
+      <!-- Nombre -->
+      <div class="field">
+        <label for="name">Nombre de la Actividad</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="Ej: Validar información del cliente"
+        />
+        <small class="err" *ngIf="c('name').touched && c('name').invalid">
+          El nombre es obligatorio (mínimo 2 caracteres).
+        </small>
       </div>
 
+      <!-- Tipo -->
+      <div class="field">
+        <label for="type">Tipo de Actividad</label>
+        <select id="type" formControlName="type">
+          <option value="" disabled selected>Seleccione un tipo</option>
+          <option *ngFor="let t of tipos" [value]="t">{{ t | titlecase }}</option>
+        </select>
+        <small class="err" *ngIf="c('type').touched && c('type').invalid">
+          El tipo es obligatorio.
+        </small>
+      </div>
+
+      <!-- Descripción -->
+      <div class="field">
+        <label for="description">Descripción</label>
+        <textarea
+          id="description"
+          rows="3"
+          formControlName="description"
+          placeholder="Describe brevemente la actividad (opcional)"
+        ></textarea>
+      </div>
+
+      <!-- Coordenadas -->
+      <div class="grid-2">
+        <div class="field">
+          <label for="x">Posición X</label>
+          <input id="x" type="number" formControlName="x" />
+        </div>
+
+        <div class="field">
+          <label for="y">Posición Y</label>
+          <input id="y" type="number" formControlName="y" />
+        </div>
+      </div>
+
+      <!-- Mensaje de error global -->
       <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
 
+      <!-- Botones -->
       <div class="actions">
-        <button class="guardar" type="submit" [disabled]="loading">Guardar</button>
-        <button class="cancelar" type="button" (click)="cancelar()">Cancelar</button>
+        <button class="btn guardar-btn" type="submit" [disabled]="loading">
+          {{ loading ? 'Actualizando...' : 'Guardar Cambios' }}
+        </button>
+        <button class="btn cancelar-btn" type="button" (click)="cancelar()">Cancelar</button>
       </div>
     </form>
   </div>

@@ -220,6 +220,7 @@ export class Login implements OnInit, OnDestroy {
         this.handleLoginError(error);
       }
     });
+    this.router.navigate(['/home'])
   }
 
   // ========================================================================
@@ -245,7 +246,7 @@ export class Login implements OnInit, OnDestroy {
     // Mostrar animación de éxito y redirigir
     setTimeout(() => {
       console.log('✅ Login exitoso:', response);
-      this.router.navigate(['/crear-proceso']);
+      // this.router.navigate(['/crear-proceso']);
     }, 1200);
   }
 
@@ -255,7 +256,7 @@ export class Login implements OnInit, OnDestroy {
   private handleLoginError(error: any): void {
     this.loading = false;
     
-    console.error('❌ Error en login:', error);
+    console.error('Error en login:', error);
     
     // Determinar mensaje de error según el código HTTP
     let errorMsg = 'Ha ocurrido un error. Intenta nuevamente.';

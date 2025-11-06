@@ -3,6 +3,8 @@ import { RegistroUsuario } from './autenticacion-y-cuentas/registro-usuario/regi
 import { CrearActividad } from './gestion-de-actividades/crear-actividad/crear-actividad';
 import { RegistroProcesos } from './registro-procesos/registro-procesos';
 import { MostrarActividades } from './gestion-de-actividades/mostrar-actividades/mostrar-actividades';
+import { HomeScreen } from './home-screen/home-screen/home-screen';
+import { ModificarActividad } from './gestion-de-actividades/modificar-actividad/modificar-actividad';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -19,8 +21,9 @@ export const routes: Routes = [
     { path: 'crear-actividad', component: CrearActividad},
     { path: 'crear-proceso', component: RegistroProcesos},
     { path: 'mostrar-actividades', component: MostrarActividades},
+    { path: 'home', component: HomeScreen},
+    { path: 'modificar-actividad', component: ModificarActividad},
     { path: 'eliminar-actividad', loadComponent: () => import('./gestion-de-actividades/eliminar-actividad/eliminar-actividad').then(m => m.EliminarActividad) },
-    { path: 'modificar-actividad', loadComponent: () => import('./gestion-de-actividades/modificar-actividad/modificar-actividad').then(m => m.ModificarActividad) },
     {path: 'consultar-actividad',loadComponent: () => import('./gestion-de-actividades/consultar-actividad/consultar-actividad').then(m => m.ConsultarActividad)},
     {path: 'crear-actividad',loadComponent: () => import('./gestion-de-actividades/crear-actividad/crear-actividad').then(m => m.CrearActividad)},
     { path: '**', redirectTo: '' },
