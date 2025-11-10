@@ -95,7 +95,24 @@ import { Router } from '@angular/router';
     // Optional visual feedback or cleanup
     this.resetDragState();
     }
-    
+
+   eliminarActividad(id?: number) {
+    if (!id) return;
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar esta actividad?');
+    if (!confirmacion) return;
+
+    this.actividadService.delete(id).subscribe({
+      next: () => {
+        alert('Actividad eliminada con éxito.');
+        this.activities = this.activities.filter((a) => a.id !== id);
+      },
+      error: (error) => {
+        console.error('Error al eliminar actividad:', error);
+        alert('No se pudo eliminar la actividad. Intenta nuevamente.');
+      },
+    });
+  }
+
     cancelar() {
     this.router.navigate(['/home']);
   }

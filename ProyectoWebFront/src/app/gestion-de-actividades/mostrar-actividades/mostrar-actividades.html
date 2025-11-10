@@ -41,6 +41,11 @@
             <span class="meta__value">{{ act.id }}</span>
           </div>
         </div>
+        <div class="card-actions">
+          <button class="btn-delete" (click)="eliminarActividad(act.id)">
+            Eliminar
+          </button>
+        </div>
       </article>
     }
     

@@ -57,7 +57,7 @@ export class HomeScreen implements OnInit {
     this.router.navigate(['/registro-de-empresa']);
   }
   navegarMostrarEmpresas(){
-    this.router.navigate(['']);
+    this.router.navigate(['/mostrar-empresas']);
   }
 
   // ======== HOME ========

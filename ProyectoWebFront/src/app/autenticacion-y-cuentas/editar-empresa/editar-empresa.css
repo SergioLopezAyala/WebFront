@@ -59,6 +59,7 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  margin-top: 0.5rem;
 }
 
 button:hover {
@@ -68,6 +69,13 @@ button:hover {
 button:disabled {
   background-color: #b5d1ff;
   cursor: not-allowed;
+}
+
+.buscar-btn {
+  background-color: #00a6ed;
+}
+.buscar-btn:hover {
+  background-color: #007bbf;
 }
 
 .login-text {
@@ -87,6 +95,12 @@ button:disabled {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -1,0 +1,64 @@
+<div class="registro-container">
+  <div class="registro-card">
+    <h2>Modificar empresa</h2>
+
+    <form (ngSubmit)="onModificarEmpresa()" #empresaForm="ngForm">
+      <div class="input-group">
+        <label for="id">ID de la empresa</label>
+        <input
+          type="number"
+          id="id"
+          name="id"
+          [(ngModel)]="idEmpresa"
+          required
+          placeholder="Ej: 1"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="name">Nombre de la empresa</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          [(ngModel)]="empresaDto.name"
+          required
+          placeholder="Ej: Tech Solutions S.A."
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="nit">NIT</label>
+        <input
+          type="text"
+          id="nit"
+          name="nit"
+          [(ngModel)]="empresaDto.nit"
+          required
+          placeholder="Ej: 900123456-7"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="email">Correo electrónico</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="empresaDto.email"
+          required
+          placeholder="empresa@correo.com"
+        />
+      </div>
+
+      <button type="submit" [disabled]="empresaForm.invalid || loading">
+        {{ loading ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+
+      <p class="login-text">
+        ¿Deseas volver?
+        <a routerLink="/home-screen">Regresar al inicio</a>
+      </p>
+    </form>
+  </div>
+</div>

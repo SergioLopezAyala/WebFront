@@ -1,8 +1,8 @@
 /* ===== CONTENEDOR PRINCIPAL ===== */
-.usuarios-container {
+.empresas-container {
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #007bff, #00c6ff);
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
   color: #0f172a;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
@@ -19,8 +19,27 @@
   text-align: center;
 }
 
-/* ===== GRID ===== */
-.usuarios-grid {
+/* ===== BOTÓN REFRESCAR ===== */
+.btn-refresh {
+  background: #fff;
+  color: #0077b6;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+.btn-refresh:hover {
+  transform: translateY(-2px);
+  background: #0077b6;
+  color: #fff;
+}
+
+/* ===== GRID DE EMPRESAS ===== */
+.empresas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -29,7 +48,7 @@
 }
 
 /* ===== TARJETA ===== */
-.usuario-card {
+.empresa-card {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
@@ -39,9 +58,9 @@
   flex-direction: column;
   justify-content: space-between;
 }
-.usuario-card:hover {
+.empresa-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 10px 25px rgba(0, 119, 182, 0.25);
 }
 
 /* ===== ENCABEZADO ===== */
@@ -58,8 +77,8 @@
   margin: 0;
 }
 .badge {
-  background: #e0f2fe;
-  color: #007bff;
+  background: #caf0f8;
+  color: #0077b6;
   border-radius: 999px;
   padding: 0.3rem 0.8rem;
   font-weight: 600;
@@ -136,7 +155,7 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
-  .usuarios-grid {
+  .empresas-grid {
     grid-template-columns: 1fr;
   }
 }

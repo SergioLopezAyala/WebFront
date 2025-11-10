@@ -1,10 +1,6 @@
 <div class="usuarios-container">
   <h2 class="title">Lista de Usuarios</h2>
 
-  <button class="btn-refresh" (click)="cargarUsuarios()" [disabled]="loading">
-    {{ loading ? 'Actualizando...' : '🔄 Refrescar' }}
-  </button>
-
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
   </div>
@@ -27,9 +23,14 @@
         <p><strong>Contraseña:</strong> {{ user.password || '—' }}</p>
         <p><strong>Organización:</strong> {{ user.organizationId ?? '—' }}</p>
       </div>
+
+      <div class="card-actions">
+        <button class="btn-delete" (click)="eliminarUsuario(user.id)">
+          Eliminar
+        </button>
+      </div>
     </div>
   </div>
 
   <button class="btn-volver" (click)="volver()">← Volver</button>
 </div>
-<p>mostrar-usuario works!</p>
